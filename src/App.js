@@ -10,7 +10,14 @@ import Routes from './Routes';
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: { 
+          main: '#002266',
+          contrastText: '#fff',
+    },
+    secondary: { 
+          main: '#cc6600',
+          contrastText: '#fff',
+    },
   },
 });
 
