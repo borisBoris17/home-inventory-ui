@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
@@ -17,36 +17,38 @@ const styles = theme => ({
   },
 });
 
-function MainMenu(props) {
-  const { classes } = props;
+class MainMenu extends Component {
 
-  return (
-    <div>
-        <Grid container className={classes.buttonDiv}>
-            <Grid item sm={12}>
-                <Button variant="raised" href="/homeEntry" color="secondary" className={classes.button}>
-                    Start New Home
-                </Button>
-                <input
-                    accept="homeEntry"
-                    className={classes.input}
-                    id="outlined-button-file"
-                    multiple
-                    type="file"
-                />
+  componentDidMount() {
+    document.title = 'Home Inventory';
+  }
+
+  render() {
+      const { classes } = this.props;
+
+      return (
+        <div>
+            <Grid container className={classes.buttonDiv}>
+                <Grid item sm={12}>
+                    <Button variant="raised" href="/homeEntry" color="secondary" className={classes.button}>
+                        Start New Home
+                    </Button>
+                    <input
+                        accept="homeEntry"
+                        className={classes.input}
+                        id="outlined-button-file"
+                        multiple
+                        type="file"
+                    />
+                </Grid>
+                <Grid item sm={12}>
+                    <Button variant="raised" href="/homeSearch" color="secondary" className={classes.button}>
+                        Select Existing Home
+                    </Button>
+                </Grid>
             </Grid>
-            <Grid item sm={12}>
-                <Button variant="raised" href="/homeSearch" color="secondary" className={classes.button}>
-                    Select Existing Home
-                </Button>
-            </Grid>
-        </Grid>
-    </div>
-  );
+        </div>
+      );
+  }
 }
-
-MainMenu.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
 export default withStyles(styles)(MainMenu);
