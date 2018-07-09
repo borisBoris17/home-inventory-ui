@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
@@ -20,11 +20,22 @@ const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
+    textAlign: 'left',
     width: 200,
   },
   button: {
     margin: theme.spacing.unit,
     width: '30%'
+  },
+  cancelButton: {
+    margin: theme.spacing.unit,
+    width: '90%',
+    marginLeft: theme.spacing.unit,
+  },
+  saveButton: {
+    margin: theme.spacing.unit,
+    width: '90%',
+    marginRight: theme.spacing.unit,
   },
   buttonDiv: {
     marginTop: theme.spacing.unit,
@@ -34,35 +45,58 @@ const styles = theme => ({
   },
 });
 
-function MainMenu(props) {
-  const { classes } = props;
+class HomeEntry extends Component {
 
-  return (
-    <div>
-        <Paper className={classes.root}>
-            <Typography variant="headline" component="h3">
-                Enter New Home
-            </Typography>
-            <Grid container>
-                <Grid item sm={12}>
-                    <TextField
-                        id="home-name"
-                        label="Home Name"
-                        className={classes.textField}
-                        margin="normal"
-                    />            
+  componentDidMount() {
+    document.title = 'Home Entry';
+  }
+
+  render() {
+    const { classes } = this.props;
+
+    return (
+        <div className="Home Entry">
+            <Paper className={classes.root}>
+                <Typography variant="headline" component="h3">
+                    Enter New Home
+                </Typography>
+                <Grid container>
+                    <Grid item sm={0} md={3}/>
+                    <Grid item xs={12} sm={6} md={3}>
+                        <TextField
+                            id="home-name"
+                            label="Home Name"
+                            className={classes.textField}
+                            margin="normal"
+                        />            
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={3}>
+                        <TextField
+                            id="home-occupants"
+                            label="Occupants"
+                            className={classes.textField}
+                            margin="normal"
+                        />            
+                    </Grid>
+                    <Grid item sm={0} md={3}/>
                 </Grid>
+            </Paper>
+            <Grid container>
+                <Grid item sm={0} sm={2} md={3}/>
+                <Grid item xs={12} sm={4} md={3}>
+                    <Button variant="raised" cxdsw color="secondary" className={classes.saveButton}>
+                        Save Home
+                    </Button>
+                </Grid>
+                <Grid item xs={12} sm={4} md={3}>
+                    <Button variant="raised" cxdsw href="/mainMenu" color="secondary" className={classes.cancelButton}>
+                        Cancel
+                    </Button>
+                </Grid>
+                <Grid item sm={0} sm={2} md={3}/>
             </Grid>
-        </Paper>
-        <Button variant="raised" color="secondary" className={classes.button}>
-            Save Home
-        </Button>
-    </div>
-  );
+        </div>
+      );
+    }
 }
-
-MainMenu.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(MainMenu);
+export default withStyles(styles)(HomeEntry);
