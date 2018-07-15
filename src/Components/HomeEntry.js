@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom'
 
-import HomeService from '../Services/HomeService'
+import HomeService from '../Services/HomeService';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
@@ -56,7 +57,10 @@ class HomeEntry extends Component {
   state = {
     name: '',
     occupants: '',
-    hasError: false
+    homeId: '',
+    hasError: false,
+    redirect: false,
+    redirectUrl: 'homeEdit/test',
   };
 
   componentDidMount() {
@@ -71,29 +75,39 @@ class HomeEntry extends Component {
 
   postHome() {
     HomeService.postHome(this.state.name, this.state.occupants)
-        .then((response) => {
-            response.json()
-            if(response.status == 200) {
-              this.setState({
-                hasError: false,
-              });
-            } else {
-              this.setState({
-                hasError: true,
-              });
-            }   
-        })
-        .then((responseJson) => {
-            if (!this.state.hasError) {
-              this.setState({
-                name: responseJson.name,
-                occupants: responseJson.occupants,
-              });
-            }
-        })
+        .then((response) => this.handleError(response))
+        .then((response) => response.json())
+        .then((responseJson) => this.handleResponse(responseJson))
         .catch((error) => {
-          console.log('message');
+          console.log(error);
         });
+  }
+
+  handleError(response) {
+    if(response.status == 200) {
+      this.setState({
+        homeId: this.state.name,
+        hasError: false,
+      });
+    } else {
+      this.setState({
+        hasError: true,
+        redirect: false,
+      });
+    }
+    return response;
+  }
+
+  handleResponse(responseJson) {
+    if (!this.state.hasError) {
+      this.setState({
+        homeId: responseJson._id,
+        name: responseJson.name,
+        occupants: responseJson.occupants,
+        redirect: true,
+        redirectUrl: "homeEdit/" + responseJson._id
+      });
+    }
   }
 
   render() {
@@ -102,12 +116,13 @@ class HomeEntry extends Component {
     return (
         <div className="HomeEntry">
             <Paper className={classes.root}>
+                {this.state.redirect ? <Redirect to={this.state.redirectUrl} /> : null}
                 {this.state.hasError ? <ErrorMessage /> : null}
                 <Typography variant="headline" component="h3">
                     Enter New Home
                 </Typography>
                 <Grid container>
-                    <Grid item sm={0} md={3}/>
+                    <Grid item md={3}/>
                     <Grid item xs={12} sm={6} md={3}>
                         <TextField
                             id="home-name"
@@ -128,22 +143,22 @@ class HomeEntry extends Component {
                             onChange={(event) => this.setState({occupants: event.target.value})}
                         />            
                     </Grid>
-                    <Grid item sm={0} md={3}/>
+                    <Grid item md={3}/>
                 </Grid>
             </Paper>
             <Grid container>
-                <Grid item sm={0} sm={2} md={3}/>
+                <Grid item sm={2} md={3}/>
                 <Grid item xs={12} sm={4} md={3}>
-                    <Button variant="raised" cxdsw color="secondary" className={classes.saveButton} onClick={this.postHome.bind(this)}>
+                    <Button variant="raised" color="secondary" className={classes.saveButton} onClick={this.postHome.bind(this)}>
                         Save Home
                     </Button>
                 </Grid>
                 <Grid item xs={12} sm={4} md={3}>
-                    <Button variant="raised" cxdsw href="/mainMenu" color="secondary" className={classes.cancelButton}>
+                    <Button variant="raised" href="/mainMenu" color="secondary" className={classes.cancelButton}>
                         Cancel
                     </Button>
                 </Grid>
-                <Grid item sm={0} sm={2} md={3}/>
+                <Grid item sm={2} md={3}/>
             </Grid>
         </div>
       );
