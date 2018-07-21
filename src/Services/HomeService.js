@@ -16,4 +16,25 @@ HomeService.postHome = function(homeName, homeOccupants) {
     });
 }
 
+HomeService.searchHomes = function(homeName, homeOccupants) {
+    var nameParam = "";
+    var occupantsParam = "";
+    var allParams = "";
+    if(homeName) {
+      nameParam = "name=" + homeName;
+    }
+    if(homeOccupants) {
+      occupantsParam = "occupants=" + homeOccupants;
+    }
+    if (nameParam && occupantsParam) {
+        allParams = "search?" + nameParam + "&" + occupantsParam;
+    } else if (nameParam) {
+        allParams = "searchByName?" + nameParam;
+    } else if (occupantsParam) {
+        allParams = "searchByOccupants?" + occupantsParam;
+    }
+    return fetch(apiEndpoint + "/api/home/" + allParams, {
+        method: 'GET'
+    });
+}
 export default HomeService

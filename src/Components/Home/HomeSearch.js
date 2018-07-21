@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom'
+import { redirect } from 'react-router-dom'
 
-import HomeService from '../Services/HomeService';
+import HomeService from '../../Services/HomeService';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
@@ -10,8 +10,9 @@ import TextField from 'material-ui/TextField';
 
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
+import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 
-import ErrorMessage from './ErrorMessage';
+import ErrorMessage from '../ErrorMessage';
 
 const styles = theme => ({
   root: theme.mixins.gutters({
@@ -28,10 +29,6 @@ const styles = theme => ({
     textAlign: 'left',
     width: 200,
   },
-  button: {
-    margin: theme.spacing.unit,
-    width: '30%'
-  },
   cancelButton: {
     margin: theme.spacing.unit,
     width: '90%',
@@ -45,26 +42,27 @@ const styles = theme => ({
   buttonDiv: {
     marginTop: theme.spacing.unit,
   },
-  input: {
-    display: 'none',
+  tableHeaderCell: {
+    fontWeight: 'bold',
+    fontSize: '1.5rem',
+    width: '45%',
   },
-  displayNone: {
-    display: 'none'
-  },
+  buttonColumn: {
+    width: '10%'
+  }
 });
 
-class HomeEntry extends Component {
+class HomeSearch extends Component {
   state = {
     name: '',
     occupants: '',
-    homeId: '',
+    homes: [],
     hasError: false,
-    redirect: false,
-    redirectUrl: 'homeEdit/test',
+    hasResults: false
   };
 
   componentDidMount() {
-    document.title = 'Home Entry';
+    document.title = 'Home Search';
   }
 
   componentDidCatch() {
@@ -73,8 +71,8 @@ class HomeEntry extends Component {
     });
   }
 
-  postHome() {
-    HomeService.postHome(this.state.name, this.state.occupants)
+  searchHomes() {
+    HomeService.searchHomes(this.state.name, this.state.occupants)
         .then((response) => this.handleError(response))
         .then((response) => response.json())
         .then((responseJson) => this.handleResponse(responseJson))
@@ -99,27 +97,34 @@ class HomeEntry extends Component {
   }
 
   handleResponse(responseJson) {
+    this.setState({
+      hasResults: false
+    });
     if (!this.state.hasError) {
       this.setState({
-        homeId: responseJson._id,
-        name: responseJson.name,
-        occupants: responseJson.occupants,
-        redirect: true,
-        redirectUrl: "homeEdit/" + responseJson._id
+        homes: responseJson,
+        hasError: false,
       });
+      if (this.state.homes.length >= 0) {
+        this.setState({
+          hasResults: true
+        });
+      }
     }
+  }
+
+  selectHome(homeId) {
+    window.location = "homeEdit/" + homeId
   }
 
   render() {
     const { classes } = this.props;
-
-    return (
-        <div className="HomeEntry">
+      return (
+        <div className="HomeSearch">
             <Paper className={classes.root}>
-                {this.state.redirect ? <Redirect to={this.state.redirectUrl} /> : null}
                 {this.state.hasError ? <ErrorMessage /> : null}
                 <Typography variant="headline" component="h3">
-                    Enter New Home
+                    Search for Home
                 </Typography>
                 <Grid container>
                     <Grid item md={3}/>
@@ -149,8 +154,8 @@ class HomeEntry extends Component {
             <Grid container>
                 <Grid item sm={2} md={3}/>
                 <Grid item xs={12} sm={4} md={3}>
-                    <Button variant="raised" color="secondary" className={classes.saveButton} onClick={this.postHome.bind(this)}>
-                        Save Home
+                    <Button variant="raised" color="secondary" className={classes.saveButton} onClick={this.searchHomes.bind(this)}>
+                        Search
                     </Button>
                 </Grid>
                 <Grid item xs={12} sm={4} md={3}>
@@ -160,8 +165,34 @@ class HomeEntry extends Component {
                 </Grid>
                 <Grid item sm={2} md={3}/>
             </Grid>
+            {this.state.hasResults ? <Paper className={classes.root}>
+                <Table className={classes.table}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell padding="checkbox" className={classes.tableHeaderCell}>Name</TableCell>
+                        <TableCell padding="checkbox" className={classes.tableHeaderCell}>Occupants</TableCell>
+                        <TableCell className={classes.buttonColumn}/>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.homes.map(n => {
+                        return (
+                          <TableRow className={classes.table} key={n._id}>
+                            <TableCell className={classes.tableCell}>{n.name}</TableCell>
+                            <TableCell className={classes.tableCell}>{n.occupants}</TableCell>
+                            <TableCell className={classes.tableCell}>
+                              <Button variant="raised" color="secondary" className={classes.selectButton} onClick={(e) => this.selectHome(n._id)}>
+                                  Select
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                </Table>
+            </Paper> : null }
         </div>
       );
-    }
+  }
 }
-export default withStyles(styles)(HomeEntry);
+export default withStyles(styles)(HomeSearch);
