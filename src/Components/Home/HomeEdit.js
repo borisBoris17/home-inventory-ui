@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 
-import HomeService from '../Services/HomeService';
+import HomeService from '../../Services/HomeService';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
