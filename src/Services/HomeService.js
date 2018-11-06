@@ -5,7 +5,7 @@ HomeService.postHome = function(homeName, homeOccupants) {
     let greetingJson = {
         name: homeName,
         occupants: homeOccupants
-    }
+    };
     return fetch(apiEndpoint + "/api/home/create", {
         method: 'POST',
         headers: {
@@ -14,7 +14,7 @@ HomeService.postHome = function(homeName, homeOccupants) {
         },
         body: JSON.stringify(greetingJson)
     });
-}
+};
 
 HomeService.searchHomes = function(homeName, homeOccupants) {
     var nameParam = "";
@@ -34,7 +34,13 @@ HomeService.searchHomes = function(homeName, homeOccupants) {
         allParams = "searchByOccupants?" + occupantsParam;
     }
     return fetch(apiEndpoint + "/api/home/" + allParams, {
-        method: 'GET'
+        method: 'GET',
     });
-}
+};
+
+HomeService.findHomeById = function (homeId) {
+    return fetch(apiEndpoint + "/api/home/findById?id=" + homeId, {
+        method: 'GET'
+    })
+};
 export default HomeService
